@@ -40,6 +40,8 @@ gem 'dotenv-rails', groups: [:development, :test]
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection', '~> 0.1'
 gem 'jwt'
+gem 'rswag'
+gem 'rspec-rails'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
