@@ -2,6 +2,8 @@
 
 - [x] Initialize project
 - [x] Google login
-- [ ] JWT Token Authentication
-- [ ] Apply JWT Auth to controllers
+- [x] JWT Token Authentication
+- [x] Apply JWT Auth to User controllers
+- [ ] Build system for Refresh token
 - [ ] Modify User Model
+- [ ] Make controller groups like Api::V1

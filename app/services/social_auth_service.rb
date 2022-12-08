@@ -18,7 +18,7 @@ class SocialAuthService
       auth.provider = provider
       auth.uid = params["uid"]
       auth.email = params["info"]["email"]
-      auth.first_name = params["info"]["first_name"] ||  params["info"]["name"]
+      auth.first_name = params["info"]["first_name"] || params["info"]["name"]
       auth.last_name = params["info"]["last_name"]
       auth.photo = params["info"]["image"]
 
@@ -28,9 +28,9 @@ class SocialAuthService
 
   def self.link_user(auth)
     return if auth.user_id.present?
-
+    ouid = SecureRandom.uuid
     user = User.find_by(email: auth.email)
-    user = User.create(email: auth.email) if user.blank?
+    user = User.create(email: auth.email, ouid: ouid) if user.blank?
     auth.user = user
   end
 end
