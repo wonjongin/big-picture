@@ -3,8 +3,8 @@ class CreateSocialAuths < ActiveRecord::Migration[7.0]
     create_table :social_auths do |t|
       t.string :provider, null: false
       t.string :uid, null: false
-      t.string :first_name
-      t.string :last_name
+      t.string :given_name
+      t.string :family_name
       t.string :email
       t.string :photo
       t.references :user, null: false, foreign_key: false

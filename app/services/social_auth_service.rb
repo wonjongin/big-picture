@@ -18,8 +18,8 @@ class SocialAuthService
       auth.provider = provider
       auth.uid = params["uid"]
       auth.email = params["info"]["email"]
-      auth.first_name = params["info"]["first_name"] || params["info"]["name"]
-      auth.last_name = params["info"]["last_name"]
+      auth.given_name = params["info"]["first_name"] || params["info"]["name"]
+      auth.family_name = params["info"]["last_name"]
       auth.photo = params["info"]["image"]
 
       link_user(auth)

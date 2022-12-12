@@ -14,8 +14,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_07_121243) do
   create_table "social_auths", force: :cascade do |t|
     t.string "provider", null: false
     t.string "uid", null: false
-    t.string "first_name"
-    t.string "last_name"
+    t.string "given_name"
+    t.string "family_name"
     t.string "email"
     t.string "photo"
     t.integer "user_id", null: false
@@ -26,8 +26,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_07_121243) do
 
   create_table "users", force: :cascade do |t|
     t.string "email"
-    t.string "password_digest"
-    t.string "ouid"
+    t.string "ouid", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

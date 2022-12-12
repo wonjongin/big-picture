@@ -3,7 +3,7 @@ class UserController < ApplicationController
   before_action :authenticate_user, :current_user
 
   def me
-    print @current_user
+    puts @current_user
     render json: @current_user
   end
 end
