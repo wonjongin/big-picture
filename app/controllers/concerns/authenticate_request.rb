@@ -18,14 +18,22 @@ module AuthenticateRequest
   end
 
   def decoded_token
-    header = request.headers['Authorization']
-    header = header.split(' ').last if header
-    if header
+    header = extracted_token
+    if header && verify_access_token
       begin
         @decoded_token ||= JsonWebToken.decode(header)
       rescue Error => e
         return render json: { errors: [e.message] }, status: :unauthorized
       end
     end
+  end
+
+  def extracted_token
+    header = request.headers['Authorization']
+    header.split(' ').last if header
+  end
+
+  def verify_access_token
+    Token.exists? access_token: extracted_token
   end
 end

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   # get 'auth/google'
   get 'auth/google_oauth2/callback', to: 'auth#google'
   post 'auth/login'
+  post 'auth/refresh'
 
   get 'user/me'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -4,6 +4,6 @@ class UserController < ApplicationController
 
   def me
     puts @current_user
-    render json: @current_user
+    render json: {data: {email: @current_user.email}}
   end
 end

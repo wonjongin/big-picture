@@ -4,8 +4,7 @@ class AuthController < ApplicationController
     payload = { ouid: user.ouid }
     jwt = JsonWebToken.encode payload
 
-    # render json: [user, jwt, omniauth_params]
-    render json: []
+    render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
   end
 
   def login
@@ -32,21 +31,68 @@ class AuthController < ApplicationController
             end
         end
         user = User.find_by email: email
-        payload = { ouid: user.ouid } 
-        access_jwt = JsonWebToken.encode payload
-        render json: {access_token: access_jwt}
+        ts = create_tokens user
+
+        render json: {data: ts}
       else
         render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
       end
-      rescue
-        render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
-      end
+    rescue Error => e
+      puts e
+      render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
+    end
+  end
+
+  def refresh
+    refresh_token = params[:refresh_token]
+    ts = verify_refresh_token refresh_token
+    render json: {data: ts} if ts
+    render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]} unless ts
   end
 
   private
 
   def omniauth_params
     request.env['omniauth.auth'].to_h
+  end
+
+  def create_tokens(user)
+    random = SecureRandom.uuid
+    payload = { ouid: user.ouid }
+    refresh_payload = { uuid: random }
+    access_expired_at = ENV['ACCESS_EXPIRE'].to_i.seconds.from_now
+    refresh_expired_at = ENV['REFRESH_EXPIRE'].to_i.seconds.from_now
+    access_token = JsonWebToken.encode payload, access_expired_at
+    refresh_token = JsonWebToken.encode refresh_payload, refresh_expired_at
+    t = Token.create do |tt| 
+      tt.access_token = access_token
+      tt.refresh_token = refresh_token 
+      tt.access_expired_at = access_expired_at
+      tt.refresh_expired_at = refresh_expired_at
+      tt.user = user
+    end
+    {
+      access_token: access_token, 
+      refresh_token: refresh_token, 
+      access_expired_at: access_expired_at, 
+      refresh_expired_at: refresh_expired_at
+    }
+  end
+
+  def verify_refresh_token(refresh_token)
+    t = Token.find_by refresh_token: refresh_token
+    return nil unless t
+    if Time.at(t.refresh_expired_at) > Time.now
+      if Time.at(t.access_expired_at) > Time.now
+        t.destroy
+        nil
+      else
+        t.destroy
+        create_tokens t.user
+      end
+    else
+      nil
+    end
   end
 
   def verify_id_token(id_token)
