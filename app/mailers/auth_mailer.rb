@@ -1,5 +1,5 @@
 class AuthMailer < ApplicationMailer
-  default from: 'notifications@example.com'
+  default from: "Big Picture Team <#{ENV['MAIL_USER_NAME']}>"
 
   def login_notificate
     @user = params[:user]

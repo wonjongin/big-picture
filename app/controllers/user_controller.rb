@@ -8,7 +8,7 @@ class UserController < ApplicationController
   end
 
   def my_logins
-    ts = @current_user.tokens.select("created_at, user_agent")
+    ts = @current_user.tokens.select("id, created_at, user_agent")
     render json: ts
   end
 end
