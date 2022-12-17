@@ -7,7 +7,7 @@ class AuthController < ApplicationController
     render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
   end
 
-  def login
+  def login_google
     begin
       google_payload = verify_id_token params[:id_token]
       unless google_payload.nil?
@@ -32,7 +32,7 @@ class AuthController < ApplicationController
         end
         user = User.find_by email: email
         ts = create_tokens user
-
+        send_login_email request, user
         render json: {data: ts}
       else
         render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
@@ -77,6 +77,10 @@ class AuthController < ApplicationController
       access_expired_at: access_expired_at, 
       refresh_expired_at: refresh_expired_at
     }
+  end
+
+  def send_login_email(request, user)
+    AuthMailer.with(user: user, request: request).login_notificate.deliver_now
   end
 
   def verify_refresh_token(refresh_token)

@@ -57,6 +57,20 @@ Rails.application.configure do
   Dotenv::Railtie.load
   config.hosts << ENV["HOST_NAME"]
 
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+    address: ENV['MAIL_ADDRESS'],
+    port: ENV['MAIL_PORT'].to_i,
+    domain: ENV['MAIL_DOMAIN'],
+    user_name: ENV['MAIL_USER_NAME'],
+    password: ENV["MAIL_APP_PASSWORD"],
+    authentication: "plain",
+    enable_starttls_auto: true,
+    open_timeout: 5,
+    read_timeout: 5
+  }
+
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   get 'auth/google', to: redirect('/auth/google_oauth2')
   # get 'auth/google'
   get 'auth/google_oauth2/callback', to: 'auth#google'
-  post 'auth/login'
+  post 'auth/login_google'
   post 'auth/refresh'
 
   get 'user/me'

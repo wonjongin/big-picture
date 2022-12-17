@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>로그인 되었습니다.</h1>
+    <p><%= @user.email %> 계정이 로그인 되었습니다. 본인이 아니라면 여기를 누르세요</p>
+    <h3>로그인 정보</h3>
+    <p><%= @request.user_agent %></p>
+    <p><%= @request.remote_ip %></p>
+  </body>
+</html>
