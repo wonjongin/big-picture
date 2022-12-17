@@ -29,6 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_12_025852) do
     t.string "refresh_token"
     t.datetime "access_expired_at"
     t.datetime "refresh_expired_at"
+    t.string "user_agent"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

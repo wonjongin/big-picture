@@ -6,4 +6,9 @@ class UserController < ApplicationController
     puts @current_user
     render json: {data: {email: @current_user.email}}
   end
+
+  def my_logins
+    ts = @current_user.tokens.select("created_at, user_agent")
+    render json: ts
+  end
 end

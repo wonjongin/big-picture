@@ -24,30 +24,30 @@ class AuthController < ApplicationController
           auth.photo = gph["picture"]
 
           user = User.find_by email: email
-            if user.blank?
-              ouid = SecureRandom.uuid
-              user = User.create email: email, ouid: ouid
-              auth.user = user
-            end
+          if user.blank?
+            ouid = SecureRandom.uuid
+            user = User.create email: email, ouid: ouid
+            auth.user = user
+          end
         end
         user = User.find_by email: email
-        ts = create_tokens user
+        ts = create_tokens user, request.user_agent
         send_login_email request, user
-        render json: {data: ts}
+        render json: { data: ts }
       else
-        render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
+        render status: :unauthorized, json: { errors: [I18n.t('errors.controllers.auth.unauthenticated')] }
       end
     rescue Error => e
       puts e
-      render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]}
+      render status: :unauthorized, json: { errors: [I18n.t('errors.controllers.auth.unauthenticated')] }
     end
   end
 
   def refresh
     refresh_token = params[:refresh_token]
-    ts = verify_refresh_token refresh_token
-    render json: {data: ts} if ts
-    render status: :unauthorized, json: {errors: [I18n.t('errors.controllers.auth.unauthenticated')]} unless ts
+    ts = verify_refresh_token refresh_token, request.user_agent
+    render json: { data: ts } if ts
+    render status: :unauthorized, json: { errors: [I18n.t('errors.controllers.auth.unauthenticated')] } unless ts
   end
 
   private
@@ -56,7 +56,7 @@ class AuthController < ApplicationController
     request.env['omniauth.auth'].to_h
   end
 
-  def create_tokens(user)
+  def create_tokens(user, ua)
     random = SecureRandom.uuid
     payload = { ouid: user.ouid }
     refresh_payload = { uuid: random }
@@ -64,18 +64,20 @@ class AuthController < ApplicationController
     refresh_expired_at = ENV['REFRESH_EXPIRE'].to_i.seconds.from_now
     access_token = JsonWebToken.encode payload, access_expired_at
     refresh_token = JsonWebToken.encode refresh_payload, refresh_expired_at
-    t = Token.create do |tt| 
+    t = Token.create do |tt|
       tt.access_token = access_token
-      tt.refresh_token = refresh_token 
+      tt.refresh_token = refresh_token
       tt.access_expired_at = access_expired_at
       tt.refresh_expired_at = refresh_expired_at
+      tt.user_agent = detect_client(ua)
       tt.user = user
     end
     {
-      access_token: access_token, 
-      refresh_token: refresh_token, 
-      access_expired_at: access_expired_at, 
-      refresh_expired_at: refresh_expired_at
+      access_token: access_token,
+      refresh_token: refresh_token,
+      access_expired_at: access_expired_at,
+      refresh_expired_at: refresh_expired_at,
+      user_agent: detect_client(ua)
     }
   end
 
@@ -83,7 +85,7 @@ class AuthController < ApplicationController
     AuthMailer.with(user: user, request: request).login_notificate.deliver_now
   end
 
-  def verify_refresh_token(refresh_token)
+  def verify_refresh_token(refresh_token, ua)
     t = Token.find_by refresh_token: refresh_token
     return nil unless t
     if Time.at(t.refresh_expired_at) > Time.now
@@ -92,7 +94,7 @@ class AuthController < ApplicationController
         nil
       else
         t.destroy
-        create_tokens t.user
+        create_tokens t.user, ua
       end
     else
       nil
@@ -108,5 +110,11 @@ class AuthController < ApplicationController
       puts "Cannot validate: #{e}"
       return nil
     end
+  end
+
+  def detect_client(ua)
+    require "browser"
+    browser_agent = Browser.new(ua, accept_language: "en-us")
+    return "#{browser_agent.device.name} #{browser_agent.name} #{browser_agent.platform.name}"
   end
 end

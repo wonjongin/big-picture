@@ -5,6 +5,7 @@ class CreateTokens < ActiveRecord::Migration[7.0]
       t.string :refresh_token
       t.datetime :access_expired_at
       t.datetime :refresh_expired_at
+      t.string :user_agent
       t.references :user, index: true, foreign_key: false
 
       t.timestamps
