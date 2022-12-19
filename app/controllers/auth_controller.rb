@@ -1,10 +1,13 @@
 class AuthController < ApplicationController
   def google
     user = SocialAuthService.google(omniauth_params)
-    payload = { ouid: user.ouid }
-    jwt = JsonWebToken.encode payload
-
-    render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
+    # payload = { ouid: user.ouid }
+    # jwt = JsonWebToken.encode payload
+    ts = create_tokens user, request.user_agent
+    send_login_email request, user
+    redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
+    # render json: { data: ts }
+    # render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
   end
 
   def login_google
@@ -77,7 +80,6 @@ class AuthController < ApplicationController
       refresh_token: refresh_token,
       access_expired_at: access_expired_at,
       refresh_expired_at: refresh_expired_at,
-      user_agent: detect_client(ua)
     }
   end
 

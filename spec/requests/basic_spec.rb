@@ -4,7 +4,8 @@ RSpec.describe 'basic', type: :request do
 
   path '/basic/index' do
 
-    get('list basics') do
+    get('index basics') do
+      tags 'Basics'
       response(200, 'successful') do
 
         after do |example|
@@ -24,8 +25,11 @@ RSpec.describe 'basic', type: :request do
     parameter name: 'text', in: :path, type: :string, description: 'text'
 
     get('list basics') do
+      tags 'Basics'
+      produces 'application/json'
+      request_body_example value: { text: 'Foo' }, name: 'basic', summary: 'Request example description'
       response(200, 'successful') do
-        let(:text) { '123' }
+        let(:text) { 'Hello world!' }
 
         after do |example|
           example.metadata[:response][:content] = {
@@ -51,7 +55,11 @@ RSpec.describe 'basic', type: :request do
             }
           }
         end
-        run_test!
+        # run_test!
+        it 'should response now time' do |example|
+          puts example.metadata
+          expect(1).to eq 1
+        end
       end
     end
   end
