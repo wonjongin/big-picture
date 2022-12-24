@@ -3,7 +3,7 @@ class AuthController < ApplicationController
     user = SocialAuthService.google(omniauth_params)
     # payload = { ouid: user.ouid }
     # jwt = JsonWebToken.encode payload
-    ts = create_tokens user, request.user_agent
+    ts = create_tokens user, request.user_agent, request.ip
     send_login_email request, user
     redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
     # render json: { data: ts }
@@ -34,7 +34,7 @@ class AuthController < ApplicationController
           end
         end
         user = User.find_by email: email
-        ts = create_tokens user, request.user_agent
+        ts = create_tokens user, request.user_agent, request.ip
         send_login_email request, user
         render json: { data: ts }
       else
@@ -57,7 +57,7 @@ class AuthController < ApplicationController
     access_token = param[:access_token]
     t = Token.find_by access_token: access_token
     t.destroy!
-    render status: :ok, json: { messages: ["Log out successfully!"]}
+    render status: :ok, json: { messages: ["Log out successfully!"] }
   end
 
   private
@@ -66,7 +66,7 @@ class AuthController < ApplicationController
     request.env['omniauth.auth'].to_h
   end
 
-  def create_tokens(user, ua)
+  def create_tokens(user, ua, ip)
     random = SecureRandom.uuid
     payload = { ouid: user.ouid }
     refresh_payload = { uuid: random }
@@ -80,6 +80,7 @@ class AuthController < ApplicationController
       tt.access_expired_at = access_expired_at
       tt.refresh_expired_at = refresh_expired_at
       tt.user_agent = detect_client(ua)
+      tt.ip = ip
       tt.user = user
     end
     {
@@ -103,7 +104,7 @@ class AuthController < ApplicationController
         nil
       else
         t.destroy
-        create_tokens t.user, ua
+        create_tokens t.user, ua, request.ip
       end
     else
       nil

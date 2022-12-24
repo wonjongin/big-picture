@@ -1,6 +1,6 @@
 class BasicController < ApplicationController
   include AuthenticateRequest
-  before_action :authenticate_user, :current_user
+  # before_action :authenticate_user, :current_user
 
   def index
     render json: "#{params[:text]}"

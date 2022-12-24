@@ -44,6 +44,7 @@ gem 'rswag'
 gem 'rspec-rails'
 gem 'google-id-token'
 gem 'browser'
+gem 'geocoder', '~> 1.3', '>= 1.3.7'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
