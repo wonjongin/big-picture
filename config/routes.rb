@@ -1,6 +1,14 @@
 Rails.application.routes.draw do
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
+  namespace :api do
+    namespace :v1 do
+      get 'community/index'
+      get 'user/me'
+      get 'user/my_logins'
+    end
+  end
+
   get 'basic/index'
   get 'basic/index/:text', to: 'basic#index'
   get 'basic/time'
@@ -11,8 +19,6 @@ Rails.application.routes.draw do
   post 'auth/login_google'
   post 'auth/refresh'
 
-  get 'user/me'
-  get 'user/my_logins'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

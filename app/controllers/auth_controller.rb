@@ -5,8 +5,12 @@ class AuthController < ApplicationController
     # jwt = JsonWebToken.encode payload
     ts = create_tokens user, request.user_agent, request.ip
     send_login_email request, user
-    redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
-    # render json: { data: ts }
+    if Rails.env.development?
+      render json: { data: ts }
+    else
+      redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
+    end
+
     # render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
   end
 
