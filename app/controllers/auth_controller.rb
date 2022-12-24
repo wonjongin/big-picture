@@ -53,6 +53,13 @@ class AuthController < ApplicationController
     render status: :unauthorized, json: { errors: [I18n.t('errors.controllers.auth.unauthenticated')] } unless ts
   end
 
+  def logout
+    access_token = param[:access_token]
+    t = Token.find_by access_token: access_token
+    t.destroy!
+    render status: :ok, json: { messages: ["Log out successfully!"]}
+  end
+
   private
 
   def omniauth_params

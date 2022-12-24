@@ -4,9 +4,44 @@ info:
   title: API V1
   version: v1
 paths:
+  "/basic/index":
+    get:
+      summary: index basics
+      tags:
+      - Basics
+      responses:
+        '200':
+          description: successful
+  "/basic/index/{text}":
+    parameters:
+    - name: text
+      in: path
+      description: text
+      required: true
+      schema:
+        type: string
+    get:
+      summary: list basics
+      tags:
+      - Basics
+      responses:
+        '200':
+          description: successful
+  "/basic/time":
+    get:
+      summary: time basic
+      responses:
+        '200':
+          description: successful
   "/user/me":
     get:
       summary: me user
+      responses:
+        '200':
+          description: successful
+  "/user/my_logins":
+    get:
+      summary: my_logins user
       responses:
         '200':
           description: successful
