@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'auth#google'
   post 'auth/login_google'
   post 'auth/refresh'
+  get 'auth/logout'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

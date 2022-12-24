@@ -58,10 +58,14 @@ class AuthController < ApplicationController
   end
 
   def logout
-    access_token = param[:access_token]
+    access_token = params[:access_token]
     t = Token.find_by access_token: access_token
-    t.destroy!
-    render status: :ok, json: { messages: ["Log out successfully!"] }
+    unless t.nil?
+      t.destroy
+      render status: :ok, json: { messages: ["Log out successfully!"] }
+    else
+      render status: :unauthorized, json: { errors: ["Token Not Found"] }
+    end
   end
 
   private
