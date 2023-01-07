@@ -5,10 +5,19 @@ class AuthController < ApplicationController
     # jwt = JsonWebToken.encode payload
     ts = create_tokens user, request.user_agent, request.ip
     send_login_email request, user
-    if Rails.env.development?
+    isThereAClient = false
+    if not isThereAClient
       render json: { data: ts }
     else
-      redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
+      require "browser"
+      browser_agent = Browser.new(request.user_agent, accept_language: "en-us")
+      if browser.platform.windows?
+        redirect_to "http://localhost:8000/auth.html?#{ts.to_query}", allow_other_host: true
+        # elsif browser.platform.ios_app? or browser.platform.android_app?
+        #   redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
+      else
+        redirect_to "#{ENV['CUSTOM_URL_SCHEME']}://?#{ts.to_query}", allow_other_host: true
+      end
     end
 
     # render json: Rails.env.development? ? [user, jwt, omniauth_params] : []
@@ -100,7 +109,7 @@ class AuthController < ApplicationController
   end
 
   def send_login_email(request, user)
-    AuthMailer.with(user: user, request: request).login_notificate.deliver_now
+    AuthMailer.with(user: user, request: request, ua: detect_client(request.user_agent)).login_notificate.deliver_now
   end
 
   def verify_refresh_token(refresh_token, ua)
@@ -133,6 +142,6 @@ class AuthController < ApplicationController
   def detect_client(ua)
     require "browser"
     browser_agent = Browser.new(ua, accept_language: "en-us")
-    return "#{browser_agent.device.name} #{browser_agent.name} #{browser_agent.platform.name}"
+    return "#{browser_agent.platform.name} #{browser_agent.name}"
   end
 end

@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-  </head>
-  <body>
-    <h1>로그인 되었습니다.</h1>
-    <p><%= @user.email %> 계정이 로그인 되었습니다. 본인이 아니라면 여기를 누르세요</p>
-    <h3>로그인 정보</h3>
-    <p><%= @request.user_agent %></p>
-    <p><%= @ip_location %></p>
-    <p><%= @request.remote_ip %></p>
-  </body>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+  <style>
+      table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+      }
+  </style>
+</head>
+<body>
+<h1>로그인 되었습니다.</h1>
+<p><%= @user.email %> 계정이 Big Picture에 로그인 되었습니다. 본인이 아니라면 여기를 누르세요</p>
+
+<table>
+  <thead>
+  <tr>
+    <th colspan="2">로그인 정보</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>기기</td>
+    <td><%= @ua %></td>
+  </tr>
+  <tr>
+    <td>IP</td>
+    <td><%= @request.remote_ip %></td>
+  </tr>
+  <tr>
+    <td>위치</td>
+    <td><%= @ip_location %></td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
 </html>

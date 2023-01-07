@@ -4,6 +4,7 @@ class AuthMailer < ApplicationMailer
   def login_notificate
     @user = params[:user]
     @request = params[:request]
+    @ua = params[:ua]
     res = Geocoder.search(@request.ip)
     @ip_location = res.first.country
     mail to: @user.email, subject: 'Big Picture 로그인 알림'
