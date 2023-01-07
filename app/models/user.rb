@@ -4,4 +4,5 @@ class User < ApplicationRecord
   validates :ouid, uniqueness: true, presence: true
 
   has_many :tokens, class_name: 'Token', dependent: :destroy
+  has_and_belongs_to_many :communities
 end
