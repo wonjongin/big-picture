@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_27_025154) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_17_055334) do
   create_table "communities", force: :cascade do |t|
     t.string "ocid"
     t.string "dp_name"
@@ -23,6 +23,25 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_27_025154) do
     t.integer "user_id"
     t.index ["community_id"], name: "index_communities_users_on_community_id"
     t.index ["user_id"], name: "index_communities_users_on_user_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "title"
+    t.string "location"
+    t.boolean "allday"
+    t.datetime "start"
+    t.datetime "end"
+    t.integer "community_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["community_id"], name: "index_events_on_community_id"
+  end
+
+  create_table "events_users", id: false, force: :cascade do |t|
+    t.integer "event_id"
+    t.integer "user_id"
+    t.index ["event_id"], name: "index_events_users_on_event_id"
+    t.index ["user_id"], name: "index_events_users_on_user_id"
   end
 
   create_table "social_auths", force: :cascade do |t|
