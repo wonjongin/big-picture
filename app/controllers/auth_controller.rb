@@ -5,7 +5,7 @@ class AuthController < ApplicationController
     # jwt = JsonWebToken.encode payload
     ts = create_tokens user, request.user_agent, request.ip
     send_login_email request, user
-    isThereAClient = true
+    isThereAClient = ENV['API_DEV_ONLY'].to_i == 0
     if not isThereAClient
       render json: { data: ts }
     else

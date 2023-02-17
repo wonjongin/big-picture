@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   mount Rswag::Api::Engine => '/api-docs'
   namespace :api do
     namespace :v1 do
-      get 'community/index'
+      post 'community/:name', to: 'community#create'
+      get 'community/my'
+      put 'community/:ocid/:ouid', to: 'community#invite'
       get 'user/me'
       get 'user/my_logins'
     end
